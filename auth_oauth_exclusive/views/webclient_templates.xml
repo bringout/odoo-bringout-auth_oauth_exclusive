@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+    <!-- Hide password form, show only OAuth login buttons -->
+    <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
+        <!-- Hide the password form fields -->
+        <xpath expr="//input[@name='login']/.." position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//input[@name='password']/.." position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//button[@type='submit']" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <!-- Hide signup/reset links -->
+        <xpath expr="//a[contains(@href, 'signup')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+        <xpath expr="//a[contains(@href, 'reset_password')]" position="attributes">
+            <attribute name="style">display: none;</attribute>
+        </xpath>
+    </template>
+</odoo>
