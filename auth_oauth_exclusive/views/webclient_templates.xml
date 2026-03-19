@@ -17,12 +17,8 @@
                 .oe_login_form em.text-muted {
                     display: none !important;
                 }
-                /* Hide "Log in as superuser" debug button */
-                .oe_login_form button[name="redirect"][value="/web/become"] {
-                    display: none !important;
-                }
-                /* Hide all submit buttons in the login form */
-                .oe_login_form .oe_login_buttons {
+                /* Hide "Log in" and "Log in as superuser" buttons, keep OAuth */
+                .oe_login_form .oe_login_buttons > button {
                     display: none !important;
                 }
             </style>
