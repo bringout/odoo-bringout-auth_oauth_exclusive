@@ -1,23 +1,23 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Hide password form, show only OAuth login buttons -->
+    <!-- Hide password form fields, show only OAuth login buttons -->
     <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
-        <!-- Hide the password form fields -->
-        <xpath expr="//input[@name='login']/.." position="attributes">
-            <attribute name="style">display: none;</attribute>
-        </xpath>
-        <xpath expr="//input[@name='password']/.." position="attributes">
-            <attribute name="style">display: none;</attribute>
-        </xpath>
-        <xpath expr="//button[@type='submit']" position="attributes">
-            <attribute name="style">display: none;</attribute>
-        </xpath>
-        <!-- Hide signup/reset links -->
-        <xpath expr="//a[contains(@href, 'signup')]" position="attributes">
-            <attribute name="style">display: none;</attribute>
-        </xpath>
-        <xpath expr="//a[contains(@href, 'reset_password')]" position="attributes">
-            <attribute name="style">display: none;</attribute>
+        <xpath expr="//form[hasclass('oe_login_form')]" position="inside">
+            <style>
+                /* Hide password login form elements, keep OAuth buttons */
+                .oe_login_form .mb-3,
+                .oe_login_form .clearfix.oe_login_buttons .btn-primary[type="submit"],
+                .oe_login_form a[href*="signup"],
+                .oe_login_form a[href*="reset_password"],
+                .oe_login_form input[name="csrf_token"],
+                .oe_login_form input[name="redirect"] {
+                    display: none !important;
+                }
+                /* "- or -" separator not needed when only OAuth */
+                .oe_login_form em.text-muted {
+                    display: none !important;
+                }
+            </style>
         </xpath>
     </template>
 </odoo>
