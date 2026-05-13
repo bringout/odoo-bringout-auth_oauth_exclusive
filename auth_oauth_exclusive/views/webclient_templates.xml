@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
     <!-- Hide password form fields, show only OAuth login buttons.
-         Inject into the <head> rather than the login form itself so
-         the template works across Odoo versions — the form's class
-         name and DOM shape changed between 16 and 19, but every
-         frontend layout still has a <head>. -->
+         `//form` is the only stable anchor across Odoo versions —
+         hasclass('oe_login_form') and `//head` both fail to resolve
+         in the inheritance arch of web.login (the body template
+         doesn't carry a <head>). The CSS still targets the rendered
+         .oe_login_form class for selectivity. -->
     <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
-        <xpath expr="//head" position="inside">
+        <xpath expr="//form" position="before">
             <style>
                 /* Hide password login form elements, keep OAuth buttons */
                 .oe_login_form .mb-3,
