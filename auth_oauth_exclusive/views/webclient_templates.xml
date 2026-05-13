@@ -9,13 +9,19 @@
     <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
         <xpath expr="//form" position="before">
             <style>
-                /* Hide password login form elements, keep OAuth buttons */
+                /* Hide password login form elements, keep OAuth buttons.
+                   v19 puts the password input in .input-group (with
+                   eye-toggle button), not in a .mb-3 div like the
+                   email field — so we target both shapes. */
+                .oe_login_form .field-login,
                 .oe_login_form .mb-3,
-                .oe_login_form .clearfix.oe_login_buttons .btn-primary[type="submit"],
+                .oe_login_form .input-group,
+                .oe_login_form label[for="login"],
+                .oe_login_form label[for="password"],
+                .oe_login_form input[name="login"],
+                .oe_login_form input[name="password"],
                 .oe_login_form a[href*="signup"],
-                .oe_login_form a[href*="reset_password"],
-                .oe_login_form input[name="csrf_token"],
-                .oe_login_form input[name="redirect"] {
+                .oe_login_form a[href*="reset_password"] {
                     display: none !important;
                 }
                 /* "- or -" separator not needed when only OAuth */
