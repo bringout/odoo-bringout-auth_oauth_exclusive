@@ -1,37 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Hide password form fields, show only OAuth login buttons.
-         `//form` is the only stable anchor across Odoo versions —
-         hasclass('oe_login_form') and `//head` both fail to resolve
-         in the inheritance arch of web.login (the body template
-         doesn't carry a <head>). The CSS still targets the rendered
-         .oe_login_form class for selectivity. -->
+    <!-- Exclusive SSO: show ONLY the OAuth provider button(s) on the login page.
+
+         v19 renders the login form with `d-none` and reveals it via JS (the
+         core anti-bot/captcha path + auth_oauth_autologin's publicWidget
+         `.include`). When that reveal JS does not run (e.g. the autologin RPC
+         override errors), the WHOLE form stays hidden -> blank login page
+         (neither password NOR the OAuth buttons). So this module must do two
+         things, both in pure CSS (a <style> applies regardless of JS):
+           1. force the form visible (override `d-none`);
+           2. hide every direct child of the form EXCEPT the OAuth provider list
+              (`.o_login_auth`) — robust to the password/email/button internals
+              changing between versions — plus the now-pointless "- or -" rule.
+         The OAuth buttons are plain <a> links (no JS needed), so SSO login works
+         even if the frontend JS bundle is broken. `//form` is the only stable
+         xpath anchor in the web.login inheritance arch. -->
     <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
         <xpath expr="//form" position="before">
             <style>
-                /* Hide password login form elements, keep OAuth buttons.
-                   v19 puts the password input in .input-group (with
-                   eye-toggle button), not in a .mb-3 div like the
-                   email field — so we target both shapes. */
-                .oe_login_form .field-login,
-                .oe_login_form .mb-3,
-                .oe_login_form .input-group,
-                .oe_login_form label[for="login"],
-                .oe_login_form label[for="password"],
-                .oe_login_form input[name="login"],
-                .oe_login_form input[name="password"],
-                .oe_login_form a[href*="signup"],
-                .oe_login_form a[href*="reset_password"] {
-                    display: none !important;
-                }
-                /* "- or -" separator not needed when only OAuth */
-                .oe_login_form em.text-muted {
-                    display: none !important;
-                }
-                /* Hide "Log in" and "Log in as superuser" buttons, keep OAuth */
-                .oe_login_form .oe_login_buttons > button {
-                    display: none !important;
-                }
+                /* 1. reveal the form even if the core/autologin reveal JS didn't run */
+                form.oe_login_form.d-none { display: block !important; }
+                /* 2. keep ONLY the OAuth provider buttons (.o_login_auth);
+                      hide email/password/caps-warning/"Log in"/sign-up/reset etc. */
+                .oe_login_form > *:not(.o_login_auth) { display: none !important; }
+                /* drop the "- or -" separator that sits above the buttons */
+                .oe_login_form .o_login_auth > em { display: none !important; }
             </style>
         </xpath>
     </template>
