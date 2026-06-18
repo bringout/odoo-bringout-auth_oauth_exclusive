@@ -1,29 +1,35 @@
 <?xml version="1.0" encoding="utf-8"?>
 <odoo>
-    <!-- Exclusive SSO: show ONLY the OAuth provider button(s) on the login page.
+    <!-- Exclusive SSO: show ONLY the OAuth/SSO button(s) on the login page.
 
-         v19 renders the login form with `d-none` and reveals it via JS (the
-         core anti-bot/captcha path + auth_oauth_autologin's publicWidget
-         `.include`). When that reveal JS does not run (e.g. the autologin RPC
-         override errors), the WHOLE form stays hidden -> blank login page
-         (neither password NOR the OAuth buttons). So this module must do two
-         things, both in pure CSS (a <style> applies regardless of JS):
+         v19 renders the login form with `d-none` and reveals it via JS (the core
+         anti-bot/captcha path + auth_oauth_autologin's publicWidget `.include`).
+         When that reveal JS does not run, the WHOLE form stays hidden -> blank
+         login page (neither password NOR the OAuth buttons). So, in pure CSS (a
+         <style> applies regardless of JS):
            1. force the form visible (override `d-none`);
-           2. hide every direct child of the form EXCEPT the OAuth provider list
-              (`.o_login_auth`) — robust to the password/email/button internals
-              changing between versions — plus the now-pointless "- or -" rule.
-         The OAuth buttons are plain <a> links (no JS needed), so SSO login works
-         even if the frontend JS bundle is broken. `//form` is the only stable
-         xpath anchor in the web.login inheritance arch. -->
+           2. hide ONLY the password/email/submit elements, keeping the OAuth list.
+
+         DOM note (v19): the OAuth list `.o_login_auth` is nested *inside*
+         `.oe_login_buttons` (right after the "Log in" <button>), NOT a direct
+         child of the form. So we must NOT hide `.oe_login_buttons` (that would
+         take the SSO button down with it) — hide only the submit <button> within
+         it. We target the password/email blocks by their own wrappers. -->
     <template id="auth_oauth_exclusive_login" inherit_id="web.login" name="OAuth Exclusive Login">
         <xpath expr="//form" position="before">
             <style>
                 /* 1. reveal the form even if the core/autologin reveal JS didn't run */
                 form.oe_login_form.d-none { display: block !important; }
-                /* 2. keep ONLY the OAuth provider buttons (.o_login_auth);
-                      hide email/password/caps-warning/"Log in"/sign-up/reset etc. */
-                .oe_login_form > *:not(.o_login_auth) { display: none !important; }
-                /* drop the "- or -" separator that sits above the buttons */
+                /* 2. hide the password/email fields + their helpers, keep .oe_login_buttons
+                      (it wraps the OAuth list) and the OAuth links themselves */
+                .oe_login_form .field-login,            /* email field block */
+                .oe_login_form .o_caps_lock_warning,    /* password field row (label/forgot + input) */
+                .oe_login_form a[href*="signup"],
+                .oe_login_form a[href*="reset_password"] { display: none !important; }
+                /* hide the "Log in" submit button but NOT its parent .oe_login_buttons
+                   (which contains .o_login_auth with the SSO buttons) */
+                .oe_login_form .oe_login_buttons > button[type="submit"] { display: none !important; }
+                /* drop the "- or -" separator above the SSO buttons */
                 .oe_login_form .o_login_auth > em { display: none !important; }
             </style>
         </xpath>
